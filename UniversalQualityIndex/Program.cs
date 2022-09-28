@@ -67,7 +67,22 @@ internal class Program
                 }
             }
 
-            double quality = Quality(orig, test, new Window{ startX = 0, startY = 0, width = width});
+            int stepsW = width - window;
+            int stepsH = height - window;
+
+            double quality = 0;
+
+            for (int i = 0; i < stepsW; i++)
+            {
+                for (int j = 0; j < stepsH; j++)
+                {
+                    quality += Quality(orig, test, new Window { startX = i, startY = j, width = width });
+                }
+
+                Console.WriteLine($"Progress: {i} / {stepsW}");
+            }
+
+            quality /= stepsW * stepsH;
 
             Console.WriteLine($"Universal Image Quality Index: {quality}");
         }
@@ -121,7 +136,6 @@ internal class Program
         {
             for (int j = window.startY; j < window.width; j++)
             {
-
                 sum += (orig[i,j] - origMean) * (test[i,j] - testMean);
             }
         }
