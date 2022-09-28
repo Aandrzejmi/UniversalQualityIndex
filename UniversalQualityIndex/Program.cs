@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Drawing;
+using System.IO;
+using static Program;
 
 internal class Program
 {
@@ -41,51 +43,94 @@ internal class Program
 
         try
         {
-            Bitmap orig = new(origPath);
-            Bitmap test = new(testPath);
+            Bitmap origBmp = new(origPath);
+            Bitmap testBmp = new(testPath);
 
-            double quality = 0;
+            int width = origBmp.Width;
+            int height = origBmp.Height;
+
+            if (testBmp.Width != width || testBmp.Height != height)
+            {
+                Console.WriteLine("Error: Images have diffrent resolutions!");
+                return 4;
+            }
+
+            double[,] orig = new double[width,height];
+            double[,] test = new double[width,height];
+
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    orig[i, j] = origBmp.GetPixel(i, j).GetBrightness();
+                    test[i, j] = testBmp.GetPixel(i, j).GetBrightness();
+                }
+            }
+
+            double quality = Quality(orig, test, new Window{ startX = 0, startY = 0, width = width});
 
             Console.WriteLine($"Universal Image Quality Index: {quality}");
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Error reading file!\n{e.Message}");
+            Console.WriteLine($"Error reading file!:\n\t{e.Message}");
             return 2;
         }
 
         return 0;
     }
 
-    public static double Quality(double[] orig, double[] test)
+    public struct Window
     {
-        double origMean = orig.Average();
-        double testMean = test.Average();
+        public int startX;
+        public int startY;
+        public int width;
+    }
 
-        double denominator = Variance(orig, origMean) + Variance(test, testMean);
+    public static double Quality(double[,] orig, double[,] test, Window window)
+    {
+        double origMean = 0;
+        double testMean = 0;
+
+        for (int i = window.startX; i < window.width; i++)
+        {
+            for (int j = window.startY; j < window.width; j++)
+            {
+                origMean += orig[i, j];
+                testMean += test[i, j];
+            }
+        }
+
+        origMean /= window.width * window.width;
+        testMean /= window.width * window.width;
+
+        double denominator = Variance(orig, origMean, window) + Variance(test, testMean, window);
         denominator *= origMean * origMean + testMean * testMean;
 
-        double quality = 4.0 * origMean * testMean * Deviation(orig, test, origMean, testMean);
+        double quality = 4.0 * origMean * testMean * Deviation(orig, test, origMean, testMean, window);
         quality /= denominator;
 
         return quality;
     }
 
-    public static double Deviation(double[] orig, double[] test, double origMean, double testMean)
+    public static double Deviation(double[,] orig, double[,] test, double origMean, double testMean, Window window)
     {
         double sum = 0;
-        int lenght = orig.Length;
 
-        for (int i = 0; i < lenght; i++)
+        for (int i = window.startX; i < window.width; i++)
         {
-            sum += (orig[i] - origMean) * (test[i] - testMean);
+            for (int j = window.startY; j < window.width; j++)
+            {
+
+                sum += (orig[i,j] - origMean) * (test[i,j] - testMean);
+            }
         }
 
-        return sum / (lenght - 1);
+        return sum / (window.width * window.width - 1);
     }
 
-    public static double Variance(double[] arr, double mean)
+    public static double Variance(double[,] arr, double mean, Window window)
     {
-        return Deviation(arr, arr, mean, mean);
+        return Deviation(arr, arr, mean, mean, window);
     }
 }

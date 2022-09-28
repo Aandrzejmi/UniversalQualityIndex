@@ -2,7 +2,7 @@
   "profiles": {
     "UniversalQualityIndex": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\andrz\\Pictures\\Zrzut ekranu 2022-09-27 151521.png\" \"C:\\Users\\andrz\\Pictures\\Zrzut ekranu 2022-09-27 151701.png\""
+      "commandLineArgs": "../../../res/lena.png ../../../res/lena_comp.jpg"
     }
   }
 }
