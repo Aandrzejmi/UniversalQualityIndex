@@ -2,7 +2,7 @@
   "profiles": {
     "UniversalQualityIndex": {
       "commandName": "Project",
-      "commandLineArgs": "../../../res/lena.png ../../../res/lena_comp.jpg"
+      "commandLineArgs": "../../../res/lena.png ../../../res/lena_blur2.png"
     }
   }
 }

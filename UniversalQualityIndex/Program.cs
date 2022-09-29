@@ -76,10 +76,8 @@ internal class Program
             {
                 for (int j = 0; j < stepsH; j++)
                 {
-                    quality += Quality(orig, test, new Window { startX = i, startY = j, width = width });
+                    quality += Quality(orig, test, new Window { startX = i, startY = j, width = window });
                 }
-
-                Console.WriteLine($"Progress: {i} / {stepsW}");
             }
 
             quality /= stepsW * stepsH;
@@ -107,9 +105,9 @@ internal class Program
         double origMean = 0;
         double testMean = 0;
 
-        for (int i = window.startX; i < window.width; i++)
+        for (int i = window.startX; i < window.width + window.startX; i++)
         {
-            for (int j = window.startY; j < window.width; j++)
+            for (int j = window.startY; j < window.width + window.startY; j++)
             {
                 origMean += orig[i, j];
                 testMean += test[i, j];
@@ -132,9 +130,9 @@ internal class Program
     {
         double sum = 0;
 
-        for (int i = window.startX; i < window.width; i++)
+        for (int i = window.startX; i < window.width + window.startX; i++)
         {
-            for (int j = window.startY; j < window.width; j++)
+            for (int j = window.startY; j < window.width + window.startY; j++)
             {
                 sum += (orig[i,j] - origMean) * (test[i,j] - testMean);
             }
